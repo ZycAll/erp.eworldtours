@@ -5,17 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a59dc0e2-f29d-4333-bb2f-de56666bc7e1" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Eworldtours.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CreateMssqlTable.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MSSQL/Create_table.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MSSQL/WriteOrder_To_Mssql.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/order_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/getorder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/read_xlsx.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/excel_xlsx/AllOrder-Eworld.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/excel_xlsx/DistributionOrder-Eworld.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Eworldtours.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Eworldtours.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreateMssqlTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/CreateMssqlTable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MSSQL/Create_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/MSSQL/Create_table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MSSQL/WriteOrder_To_Mssql.py" beforeDir="false" afterPath="$PROJECT_DIR$/MSSQL/WriteOrder_To_Mssql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/order_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models/order_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +30,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ZycAll&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ZycAll/erp.eworldtours.git&quot;,
+    &quot;accountId&quot;: &quot;34ef1e21-a0e4-4ede-a8f0-0417045df050&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -53,8 +63,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "codeReviewSummary": "[]",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/25094/PycharmProjects/Eworldtours",
+    "last_opened_file_path": "C:/Users/ZYC/Desktop/erp.eworldtours/excel_xlsx",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -64,6 +75,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ZYC\Desktop\erp.eworldtours\excel_xlsx" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\25094\PycharmProjects\Eworldtours" />
     </key>
@@ -71,8 +85,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
-        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
+        <option value="bundled-python-sdk-b3ae9b5d7125-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.439" />
       </set>
     </attachedChunks>
   </component>

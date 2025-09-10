@@ -4,7 +4,6 @@ from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, DateTime, Integer, Numeric, Boolean, Text, func, NVARCHAR
@@ -40,26 +39,26 @@ class Order(Base):
     Children = Column(Integer)        # 儿童
     Escorts = Column(Integer)         # 全陪
 
-    AmountPayable = Column(Numeric(12, 2)) # 应付
-    AmountPaid = Column(Numeric(12, 2))   # 已付
-    AmountUnpaid = Column(Numeric(12, 2)) # 未付
-    Rebate = Column(Numeric(12, 2))   # 返点
-    ProportionalRebate = Column(Numeric(12, 2)) # 按比例返点
-    PerCapitaRebate = Column(Numeric(12, 2)) # 按人头返点
-    AmountReceivable = Column(Numeric(12, 2)) # 应收
-    AmountReceived = Column(Numeric(12, 2))  # 已收
-    AmountUnreceived = Column(Numeric(12, 2)) # 未收
-    LossDamage = Column(Boolean, default=False) # 有损
+    AmountPayable = Column(Numeric(16, 4)) # 应付
+    AmountPaid = Column(Numeric(16, 4))   # 已付
+    AmountUnpaid = Column(Numeric(16, 4)) # 未付
+    Rebate = Column(Numeric(16, 4))   # 返点
+    ProportionalRebate = Column(Numeric(16, 4)) # 按比例返点
+    PerCapitaRebate = Column(Numeric(16, 4)) # 按人头返点
+    AmountReceivable = Column(Numeric(16, 4)) # 应收
+    AmountReceived = Column(Numeric(16, 4))  # 已收
+    AmountUnreceived = Column(Numeric(16, 4)) # 未收
+    LossDamage = Column(NVARCHAR(255)) # 有损
 
-    CancelReason = Column(Text)       # 撤单理由
-    LossCost = Column(Numeric(12, 2)) # 损失费用
-    SupplierRetainedLoss = Column(Numeric(12, 2)) # 供应商自留损失费
-    GrossProfit = Column(Numeric(12, 2)) # 毛利
-    GrossProfitRate = Column(Numeric(5, 4)) # 毛利率
+    CancelReason = Column(NVARCHAR(500))       # 撤单理由
+    LossCost = Column(Numeric(16, 4)) # 损失费用
+    SupplierRetainedLoss = Column(Numeric(16, 4)) # 供应商自留损失费
+    GrossProfit = Column(Numeric(16, 4)) # 毛利
+    GrossProfitRate = Column(Numeric(10, 6)) # 毛利率
     ContactPerson = Column(NVARCHAR(255)) # 联系人
     ContactPhone = Column(NVARCHAR(50))  # 联系人电话
-    ContractAmount = Column(Numeric(12, 2)) # 合同金额
-    Tax = Column(Numeric(12, 2))      # 税金
+    ContractAmount = Column(Numeric(16, 4)) # 合同金额
+    Tax = Column(Numeric(16, 4))      # 税金
     TourType = Column(NVARCHAR(255))    # 跟团类型 (考虑使用 Enum)
 
     ProductRegion = Column(NVARCHAR(255)) # 商品地区
@@ -68,29 +67,21 @@ class Order(Base):
 
 
 
-    BranchRebates = Column(Numeric(12, 2))   #分公司返点
-    Promotions = Column(Numeric(12, 2))  #促销
+    BranchRebates = Column(Numeric(16, 4))   #分公司返点
+    Promotions = Column(Numeric(16, 4))  #促销
 
     CreatedAt = Column(DateTime, server_default=func.now())  # 记录创建时间
 class MSSQLDatabaseWriter:
-    def __init__(self, server, database, username, password):
+    def __init__(self):
         # 安全处理连接字符串
-        encoded_password = urllib.parse.quote_plus(password)
+        #encoded_password = urllib.parse.quote_plus(password)
         # 首先构建一个标准的 ODBC 连接字符串
         odbc_conn_str = (
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-            f"SERVER={server};"
-            f"DATABASE={database};"
-            f"UID={username};"
-            f"PWD={encoded_password};"
-            "charset=ascll"
-            "Encrypt=yes;"
-            "TrustServerCertificate=no;"
-            "Connection Timeout=60;"
+             "mysql+pymysql://root:root@localhost/CruiseCrawlerDB?charset=utf8mb4"
         )
 
         # 然后对连接字符串进行 URL 编码，并嵌入到 SQLAlchemy 的 URL 中
-        self.connection_string = f"mssql+pyodbc:///?odbc_connect={quote_plus(odbc_conn_str)}"
+        self.connection_string = "mysql+pymysql://root:root@localhost/CruiseCrawlerDB?charset=utf8mb4"
 
         # 创建带连接池和事务隔离级别的引擎
         self.engine = create_engine(
@@ -117,9 +108,4 @@ class MSSQLDatabaseWriter:
             print(f"❌ 表创建过程中发生错误: {e}")
             raise
 if __name__ == "__main__":
-    writer = MSSQLDatabaseWriter(
-        server="gtt-azure-group.database.windows.net",
-        database="CruiseCrawlerDB",
-        username="gttadmin",
-        password="EC90-18AC15y&00FE8086*4B286e3901"
-    )
+    writer = MSSQLDatabaseWriter(    )
