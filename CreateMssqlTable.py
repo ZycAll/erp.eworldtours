@@ -23,21 +23,7 @@ try:
     # 执行多个ALTER TABLE语句来修改列类型
     alter_queries = [
         "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountPayable NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountPaid NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountUnpaid NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN Rebate NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN ProportionalRebate NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN PerCapitaRebate NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountReceivable NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountReceived NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN AmountUnreceived NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN LossCost NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN SupplierRetainedLoss NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN GrossProfit NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN ContractAmount NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN Tax NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN BranchRebates NUMERIC(16, 4)",
-        "ALTER TABLE Eworldtours_AllOrders ALTER COLUMN Promotions NUMERIC(16, 4)"
+
     ]
 
     for query in alter_queries:
