@@ -13,13 +13,14 @@ class ReadExcel:
         self.filename1 = "../excel_xlsx/AllOrder-Eworld.xlsx"  # 所有订单
         self.filename2 = "../excel_xlsx/SupplyOrder-Eworld.xlsx"
         self.filename3 = "../excel_xlsx/DistributionOrder-Eworld.xlsx"
-        self.filename4 = "../excel_xlsx/AllOrder-Tinma.xlsx"
+        #self.filename4 = "../excel_xlsx/AllOrder-Tinma.xlsx"
         self.filename5 = "../excel_xlsx/SupplyOrder-Tinma.xlsx"
         self.filename6 = "../excel_xlsx/DistributionOrder-Tinma.xlsx"
-        self.filename_li = [self.filename1, self.filename2, self.filename3, self.filename4, self.filename5,
+        self.filename_li = [self.filename1, self.filename2, self.filename3,  self.filename5, #self.filename4,
                             self.filename6]
         self.session = None
         self.lock = threading.Lock()  # 添加线程锁确保数据库操作安全
+        self.failed_orders = []  # 新增：用于记录失败的订单编号和错误信息
 
     def read_excel(self, filename, ):
         """分块读取Excel文件"""
@@ -115,37 +116,56 @@ class ReadExcel:
         """
         将DataFrame数据批量写入SQL Server数据库
         """
-        # [原有实现保持不变]
         if self.session is None:
             raise ValueError("Database session is not set. Please call set_database_session first.")
 
         session = self.session()
+        orders_list = self.process_chunk_to_orders(df, order_type)
+        chunk_failed_orders = []
         try:
-            orders_list = self.process_chunk_to_orders(df, order_type)
-
-            # 使用线程锁确保数据库操作安全
+            # 使用线程锁确保数据库操作安全[4](@ref)
             with self.lock:
-                session.bulk_save_objects(orders_list)
+                for order in orders_list:
+                    try:
+                        # 尝试逐个添加订单对象，但暂不提交
+                        session.add(order)
+                        # 可以尝试 flush 来立即执行插入操作，但遇到错误会抛出异常
+                        session.flush()
+                        print(f"{order.OrderId} ok")
+                    except Exception as e:
+                        # 如果插入失败，回滚当前事务（针对这个订单）
+                        session.rollback()
+                        # 记录失败的订单编号和错误信息
+                        print(f"{order.OrderId} error: {e}")
+                        order_info = f"OrderType: {order_type}, OrderId: {order.OrderId}, Error: {str(e)}"
+                        chunk_failed_orders.append(order_info)
+                        # 继续处理下一个订单
+                        continue
+                # 如果所有订单都成功，提交事务
                 session.commit()
-                print(f"成功插入 {len(orders_list)} 条订单数据。")
+                print(f"成功插入 {len(orders_list) - len(chunk_failed_orders)} 条订单数据。")
 
         except Exception as e:
+            # 处理可能出现的其他异常
             session.rollback()
-            print(f"插入数据时发生错误: {e}")
-            raise
+            print(f"处理块时发生未知错误: {e}")
         finally:
             session.close()
 
+            # 将当前块的失败订单添加到总列表中
+        with self.lock:  # 确保多线程下对共享资源 self.failed_orders 的访问安全[4](@ref)
+            self.failed_orders.extend(chunk_failed_orders)
+
     def process_single_file(self, filename, order_type, chunksize=500):
-        """处理单个文件（支持分块读取）[3,8](@ref)"""
+        """处理单个文件（支持分块读取）"""
         print(f"开始处理文件: {filename}")
         try:
-            # 分块读取并处理[3,8](@ref)
+            # 分块读取并处理
             for chunk in self.read_excel_chunked(filename, chunksize=chunksize):
                 self.write_to_mssql(chunk, order_type)
 
             order_num = len(pd.read_excel(filename))
-            print(f"{order_type}的{order_num}个订单已经写入")
+            print(f"{order_type}的{order_num}个订单已经尝试处理")
             return True
 
         except Exception as e:
@@ -163,7 +183,7 @@ class ReadExcel:
             self.filename5: "SupplyOrder-Tinma",
             self.filename6: "DistributionOrder-Tinma"
         }
-
+        self.failed_orders = []
         # 使用ThreadPoolExecutor创建线程池[6](@ref)
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有任务到线程池
@@ -188,14 +208,20 @@ class ReadExcel:
 
             print(f"所有文件处理完成。成功: {success_count}/{len(self.filename_li)}")
 
-
+        # 所有线程结束后，打印失败的订单信息
+        if self.failed_orders:
+            print(f"\n以下是插入失败的订单信息（共 {len(self.failed_orders)} 条）:")
+            for failed_order in self.failed_orders:
+                print(failed_order["OrderId"])
+        else:
+            print("\n所有订单均已成功插入！")
 if __name__ == '__main__':
     # 1. 初始化数据库写入器并获取SessionMaker
     writer = MSSQLDatabaseWriter(
         server="gtt-azure-group.database.windows.net",
         database="CruiseCrawlerDB",
-        username="majestic",
-        password="1AF@8A79f67^0110F7e532C*-21857F8"
+        username="gttadmin",
+        password="EC90-18AC15y&00FE8086*4B286e3901"
     )
     SessionMaker = writer.Session
 
@@ -203,4 +229,4 @@ if __name__ == '__main__':
     data_reader.set_database_session(SessionMaker)
 
     # 使用多线程处理所有文件
-    data_reader.process_all_files_threaded(max_workers=12)  # 可以根据需要调整线程数
+    data_reader.process_all_files_threaded(max_workers=5)  # 可以根据需要调整线程数

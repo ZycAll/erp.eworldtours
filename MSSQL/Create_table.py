@@ -40,26 +40,26 @@ class Order(Base):
     Children = Column(Integer)        # 儿童
     Escorts = Column(Integer)         # 全陪
 
-    AmountPayable = Column(Numeric(12, 2)) # 应付
-    AmountPaid = Column(Numeric(12, 2))   # 已付
-    AmountUnpaid = Column(Numeric(12, 2)) # 未付
-    Rebate = Column(Numeric(12, 2))   # 返点
-    ProportionalRebate = Column(Numeric(12, 2)) # 按比例返点
-    PerCapitaRebate = Column(Numeric(12, 2)) # 按人头返点
-    AmountReceivable = Column(Numeric(12, 2)) # 应收
-    AmountReceived = Column(Numeric(12, 2))  # 已收
-    AmountUnreceived = Column(Numeric(12, 2)) # 未收
-    LossDamage = Column(Boolean, default=False) # 有损
+    AmountPayable = Column(Numeric(16, 4)) # 应付
+    AmountPaid = Column(Numeric(16, 4))   # 已付
+    AmountUnpaid = Column(Numeric(16, 4)) # 未付
+    Rebate = Column(Numeric(16, 4))   # 返点
+    ProportionalRebate = Column(Numeric(16, 4)) # 按比例返点
+    PerCapitaRebate = Column(Numeric(16, 4)) # 按人头返点
+    AmountReceivable = Column(Numeric(16, 4)) # 应收
+    AmountReceived = Column(Numeric(16, 4))  # 已收
+    AmountUnreceived = Column(Numeric(16, 4)) # 未收
+    LossDamage = Column(NVARCHAR(255)) # 有损
 
-    CancelReason = Column(Text)       # 撤单理由
-    LossCost = Column(Numeric(12, 2)) # 损失费用
-    SupplierRetainedLoss = Column(Numeric(12, 2)) # 供应商自留损失费
-    GrossProfit = Column(Numeric(12, 2)) # 毛利
-    GrossProfitRate = Column(Numeric(5, 4)) # 毛利率
+    CancelReason = Column(NVARCHAR(500))       # 撤单理由
+    LossCost = Column(Numeric(16, 4)) # 损失费用
+    SupplierRetainedLoss = Column(Numeric(16, 4)) # 供应商自留损失费
+    GrossProfit = Column(Numeric(16, 4)) # 毛利
+    GrossProfitRate = Column(Numeric(16, 10)) # 毛利率
     ContactPerson = Column(NVARCHAR(255)) # 联系人
     ContactPhone = Column(NVARCHAR(50))  # 联系人电话
-    ContractAmount = Column(Numeric(12, 2)) # 合同金额
-    Tax = Column(Numeric(12, 2))      # 税金
+    ContractAmount = Column(Numeric(16, 4)) # 合同金额
+    Tax = Column(Numeric(16, 4))      # 税金
     TourType = Column(NVARCHAR(255))    # 跟团类型 (考虑使用 Enum)
 
     ProductRegion = Column(NVARCHAR(255)) # 商品地区
@@ -68,8 +68,8 @@ class Order(Base):
 
 
 
-    BranchRebates = Column(Numeric(12, 2))   #分公司返点
-    Promotions = Column(Numeric(12, 2))  #促销
+    BranchRebates = Column(Numeric(16, 4))   #分公司返点
+    Promotions = Column(Numeric(16, 4))  #促销
 
     CreatedAt = Column(DateTime, server_default=func.now())  # 记录创建时间
 class MSSQLDatabaseWriter:
