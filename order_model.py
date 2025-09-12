@@ -1,14 +1,15 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, DateTime, Integer, Numeric, Boolean, Text, func, ForeignKey, NVARCHAR
+from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 import uuid
-
+import guid
 Base = declarative_base()
 
 class Order(Base):
     __tablename__ = 'Eworldtours_AllOrders'  # 自定义表名，避免使用SQL关键字
 
-    Id = Column(NVARCHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    Id = Column(UNIQUEIDENTIFIER, primary_key=True, default=uuid.uuid4)
     AccountName = Column(NVARCHAR(50))
     OrderType = Column(NVARCHAR(36))
 

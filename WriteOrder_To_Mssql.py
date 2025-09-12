@@ -260,7 +260,7 @@ if __name__ == '__main__':
     Order2.get('SupplyOrder-Tinma.xlsx', payload=Order2.payload5,headers=Order2.headers2,data=Order2.data2)
     Order2.get('DistributionOrder-Tinma.xlsx', payload=Order2.payload6,headers=Order2.headers2,data=Order2.data2)
     logger.info("write order to excel is success")
-    '''
+
     #--------初始化数据库写入----------
     writer = MSSQLDatabaseWriter(
         server="gtt-azure-group.database.windows.net",
@@ -279,7 +279,21 @@ if __name__ == '__main__':
     # --------使用多线程处理多个文件----------
     data_reader.process_all_files_threaded(max_workers=5)  # 可以根据需要调整线程数
     logger.info("process 5 files is success.")
+    '''
     # --------单独处理AllOrder-Tinma(5000多条)文件
+    # --------初始化数据库写入----------
+    writer = MSSQLDatabaseWriter(
+        server="gtt-azure-group.database.windows.net",
+        database="CruiseCrawlerDB",
+        username="majestic",  # gttadmin  EC90-18AC15y&00FE8086*4B286e3901
+        password="1AF@8A79f67^0110F7e532C*-21857F8"
+    )
+    # --------设置数据库会话--------
+    SessionMaker_0 = writer.Session
+    data_reader = ReadExcel()
+    data_reader.set_database_session(SessionMaker_0)
+    logger.info("create session connection is success.")
+
     Writer_Single =  ReadExcelSingleFile()
     Writer_Single.run(writer=writer)   #写入AllOrder-Tinma(5000多条)
     logger.info("process big file is success.")
