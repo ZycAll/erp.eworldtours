@@ -1,17 +1,16 @@
 import pandas as pd
-import itertools
 
-from MSSQL.Create_table import MSSQLDatabaseWriter
-from Models.order_model import Order
+from Create_table import MSSQLDatabaseWriter
+from order_model import Order
 class ReadExcel:
     def __init__(self):
         self.data = None
-        self.filename1 = "excel_xlsx/AllOrder-Eworld.xlsx" #所有订单
-        self.filename2 = "excel_xlsx/SupplyOrder-Eworld.xlsx"
-        self.filename3 = "excel_xlsx/DistributionOrder-Eworld.xlsx"
-        self.filename4 = "excel_xlsx/AllOrder-Tinma.xlsx"
-        self.filename5 = "excel_xlsx/SupplyOrder-Tinma2.xlsx"
-        self.filename6 = "excel_xlsx/DistributionOrder-Tinma3.xlsx"
+        self.filename1 = "AllOrder-Eworld.xlsx" #所有订单
+        self.filename2 = "SupplyOrder-Eworld.xlsx"
+        self.filename3 = "DistributionOrder-Eworld.xlsx"
+        self.filename4 = "AllOrder-Tinma.xlsx"
+        self.filename5 = "SupplyOrder-Tinma2.xlsx"
+        self.filename6 = "DistributionOrder-Tinma3.xlsx"
         self.filename_li = [self.filename1, self.filename2, self.filename3,self.filename4,self.filename5,self.filename6]
         self.session = None
     def read_excel(self,filename):
@@ -21,7 +20,7 @@ class ReadExcel:
     def set_database_session(self, session_maker):
         """设置数据库会话"""
         self.session = session_maker
-    def write_to_mssql(self, df,order_type):
+    def write_to_mssql(self, df,ERP_type,order_type):
         """
         将DataFrame数据批量写入SQL Server数据库
         :param df: 包含订单数据的DataFrame
@@ -43,6 +42,7 @@ class ReadExcel:
                     else:
                         order_data[column] = value
                 order = Order(
+                    ERP_Type=ERP_type,
                     OrderType=order_type,
                     OrderId=order_data.get('订单编号'),
                     OrderName=order_data.get('订单名称'),

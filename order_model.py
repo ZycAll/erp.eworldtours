@@ -1,13 +1,6 @@
-import urllib.parse
-from urllib.parse import quote_plus
-
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, DateTime, Integer, Numeric, Boolean, Text, func, NVARCHAR
+from sqlalchemy import Column, String, DateTime, Integer, Numeric, Boolean, Text, func, ForeignKey, NVARCHAR
 import uuid
 
 Base = declarative_base()
@@ -16,6 +9,7 @@ class Order(Base):
     __tablename__ = 'Eworldtours_AllOrders'  # 自定义表名，避免使用SQL关键字
 
     Id = Column(NVARCHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    AccountName = Column(NVARCHAR(50))
     OrderType = Column(NVARCHAR(36))
 
     OrderId = Column(NVARCHAR(36), unique=True) #订单编号
@@ -72,54 +66,3 @@ class Order(Base):
     Promotions = Column(Numeric(16, 4))  #促销
 
     CreatedAt = Column(DateTime, server_default=func.now())  # 记录创建时间
-class MSSQLDatabaseWriter:
-    def __init__(self, server, database, username, password):
-        # 安全处理连接字符串
-        encoded_password = urllib.parse.quote_plus(password)
-        # 首先构建一个标准的 ODBC 连接字符串
-        odbc_conn_str = (
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-            f"SERVER={server};"
-            f"DATABASE={database};"
-            f"UID={username};"
-            f"PWD={encoded_password};"
-            "charset=ascll"
-            "Encrypt=yes;"
-            "TrustServerCertificate=no;"
-            "Connection Timeout=60;"
-        )
-
-        # 然后对连接字符串进行 URL 编码，并嵌入到 SQLAlchemy 的 URL 中
-        self.connection_string = f"mssql+pyodbc:///?odbc_connect={quote_plus(odbc_conn_str)}"
-
-        # 创建带连接池和事务隔离级别的引擎
-        self.engine = create_engine(
-            self.connection_string,
-            isolation_level="REPEATABLE READ",  # 防止幻读和不可重复读
-            pool_size=20,
-            max_overflow=20,
-            pool_pre_ping=True,
-            pool_recycle=600
-        )
-        # 测试连接
-        try:
-            with self.engine.connect() as conn:
-                print("✅ 数据库连接成功！")
-        except Exception as e:
-            print(f"❌ 数据库连接失败: {e}")
-            raise
-        self.Session = sessionmaker(bind=self.engine)
-        # 尝试创建表
-        try:
-            Base.metadata.create_all(self.engine)
-            print("✅ 表创建尝试完成。请检查数据库。")
-        except Exception as e:
-            print(f"❌ 表创建过程中发生错误: {e}")
-            raise
-if __name__ == "__main__":
-    writer = MSSQLDatabaseWriter(
-        server="gtt-azure-group.database.windows.net",
-        database="CruiseCrawlerDB",
-        username="gttadmin",
-        password="EC90-18AC15y&00FE8086*4B286e3901"
-    )

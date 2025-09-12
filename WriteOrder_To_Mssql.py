@@ -1,23 +1,27 @@
 import pandas as pd
-import itertools
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
-
-from MSSQL.Create_table import MSSQLDatabaseWriter
-from Models.order_model import Order
+import logging
+import logging.config
+from sqlalchemy import text, inspect
+from Create_table import MSSQLDatabaseWriter
+from getorder import GetOrder
+from getorder2 import GetOrder2
+from order_model import Order
+from WriteSingleOrder import ReadExcelSingleFile
 
 
 class ReadExcel:
     def __init__(self):
         self.data = None
-        self.filename1 = "../excel_xlsx/AllOrder-Eworld.xlsx"  # 所有订单
-        self.filename2 = "../excel_xlsx/SupplyOrder-Eworld.xlsx"
-        self.filename3 = "../excel_xlsx/DistributionOrder-Eworld.xlsx"
-        #self.filename4 = "../excel_xlsx/AllOrder-Tinma.xlsx"
-        self.filename5 = "../excel_xlsx/SupplyOrder-Tinma.xlsx"
-        self.filename6 = "../excel_xlsx/DistributionOrder-Tinma.xlsx"
-        self.filename_li = [self.filename1, self.filename2, self.filename3,  self.filename5, #self.filename4,
-                            self.filename6]
+        self.filename1 = "AllOrder-Eworld.xlsx"  # 所有订单
+        self.filename2 = "SupplyOrder-Eworld.xlsx"
+        self.filename3 = "DistributionOrder-Eworld.xlsx"
+        self.filename4 = "AllOrder-Tinma.xlsx"
+        self.filename5 = "SupplyOrder-Tinma.xlsx"
+        self.filename6 = "DistributionOrder-Tinma.xlsx"
+        self.filename_li = [self.filename1, self.filename2, self.filename3, self.filename5, self.filename6  #self.filename4,
+                            ]
         self.session = None
         self.lock = threading.Lock()  # 添加线程锁确保数据库操作安全
         self.failed_orders = []  # 新增：用于记录失败的订单编号和错误信息
@@ -48,7 +52,7 @@ class ReadExcel:
         """设置数据库会话"""
         self.session = session_maker
 
-    def process_chunk_to_orders(self, chunk, order_type):
+    def process_chunk_to_orders(self, chunk, ERP_type,order_type):
         """将DataFrame块转换为订单对象列表"""
         orders_list = []
         for index, row in chunk.iterrows():
@@ -60,6 +64,7 @@ class ReadExcel:
                 else:
                     order_data[column] = value
             order = Order(
+                AccountName =ERP_type,
                 OrderType=order_type,
                 OrderId=order_data.get('订单编号'),
                 OrderName=order_data.get('订单名称'),
@@ -112,7 +117,8 @@ class ReadExcel:
             orders_list.append(order)
         return orders_list
 
-    def write_to_mssql(self, df, order_type):
+
+    def write_to_mssql(self, df,ERP_type, order_type):
         """
         将DataFrame数据批量写入SQL Server数据库
         """
@@ -120,7 +126,7 @@ class ReadExcel:
             raise ValueError("Database session is not set. Please call set_database_session first.")
 
         session = self.session()
-        orders_list = self.process_chunk_to_orders(df, order_type)
+        orders_list = self.process_chunk_to_orders(df,ERP_type=ERP_type,order_type=order_type)
         chunk_failed_orders = []
         try:
             # 使用线程锁确保数据库操作安全[4](@ref)
@@ -156,13 +162,13 @@ class ReadExcel:
         with self.lock:  # 确保多线程下对共享资源 self.failed_orders 的访问安全[4](@ref)
             self.failed_orders.extend(chunk_failed_orders)
 
-    def process_single_file(self, filename, order_type, chunksize=500):
+    def process_single_file(self, filename,ERP_type,order_type, chunksize=500):
         """处理单个文件（支持分块读取）"""
         print(f"开始处理文件: {filename}")
         try:
             # 分块读取并处理
             for chunk in self.read_excel_chunked(filename, chunksize=chunksize):
-                self.write_to_mssql(chunk, order_type)
+                self.write_to_mssql(chunk,ERP_type=ERP_type,order_type=order_type)
 
             order_num = len(pd.read_excel(filename))
             print(f"{order_type}的{order_num}个订单已经尝试处理")
@@ -188,8 +194,8 @@ class ReadExcel:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有任务到线程池
             future_to_file = {
-                executor.submit(self.process_single_file, filename, file_type_mapping[filename]): filename
-                for filename in self.filename_li[3:]
+                executor.submit(self.process_single_file, filename, file_type_mapping[filename].split("-")[1],file_type_mapping[filename].split("-")[0]): filename
+                for filename in self.filename_li
             }
 
             # 等待所有任务完成
@@ -215,18 +221,69 @@ class ReadExcel:
                 print(failed_order["OrderId"])
         else:
             print("\n所有订单均已成功插入！")
+
+    def clear_table_with_conditions(self, table_name: str, conditions: str = None):
+        """
+        清除表数据
+        """
+        session = self.session()
+        try:
+            if conditions:
+                sql = text(f'DELETE FROM {table_name} WHERE {conditions}')
+            else:
+                sql = text(f'DELETE FROM {table_name}')
+
+            session.execute(sql)
+            session.commit()
+            #logging.info(f"使用 DELETE 清空表 {table_name} 成功")
+        except Exception as e:
+            session.rollback()
+            #logging.error(f"清空表 {table_name} 时发生错误: {e}")
+            raise e
+        finally:
+            session.close()
+
+
 if __name__ == '__main__':
-    # 1. 初始化数据库写入器并获取SessionMaker
+    #---------日志配置---------------
+    logging.config.fileConfig('logger.conf')
+    logger = logging.getLogger("OrderLogger")
+    logger.info("<-------------------Start------------------->")
+    # --------获取订单excel表格写入.xlsx文件----------
+    '''Order = GetOrder()
+    Order.get('AllOrder-Eworld.xlsx', payload=Order.payload1,headers=Order.headers1)
+    Order.get('SupplyOrder-Eworld.xlsx', payload=Order.payload2,headers=Order.headers1)
+    Order.get('DistributionOrder-Eworld.xlsx', payload=Order.payload3,headers=Order.headers1)
+ 
+    Order2 = GetOrder2()
+    Order2.get('AllOrder-Tinma.xlsx', payload=Order2.payload4,headers=Order2.headers2,data=Order2.data2)
+    Order2.get('SupplyOrder-Tinma.xlsx', payload=Order2.payload5,headers=Order2.headers2,data=Order2.data2)
+    Order2.get('DistributionOrder-Tinma.xlsx', payload=Order2.payload6,headers=Order2.headers2,data=Order2.data2)
+    logger.info("write order to excel is success")
+    '''
+    #--------初始化数据库写入----------
     writer = MSSQLDatabaseWriter(
         server="gtt-azure-group.database.windows.net",
         database="CruiseCrawlerDB",
-        username="gttadmin",
-        password="EC90-18AC15y&00FE8086*4B286e3901"
+        username="majestic",           #gttadmin  EC90-18AC15y&00FE8086*4B286e3901
+        password="1AF@8A79f67^0110F7e532C*-21857F8"
     )
-    SessionMaker = writer.Session
-
+    #--------设置数据库会话--------
+    SessionMaker_0 = writer.Session
     data_reader = ReadExcel()
-    data_reader.set_database_session(SessionMaker)
-
-    # 使用多线程处理所有文件
+    data_reader.set_database_session(SessionMaker_0)
+    logger.info("create session connection is success.")
+    #--------删除数据--------
+    data_reader.clear_table_with_conditions("Eworldtours_AllOrders")
+    logger.info("delete Eworldtours_AllOrders table is success.")
+    # --------使用多线程处理多个文件----------
     data_reader.process_all_files_threaded(max_workers=5)  # 可以根据需要调整线程数
+    logger.info("process 5 files is success.")
+    # --------单独处理AllOrder-Tinma(5000多条)文件
+    Writer_Single =  ReadExcelSingleFile()
+    Writer_Single.run(writer=writer)   #写入AllOrder-Tinma(5000多条)
+    logger.info("process big file is success.")
+    logger.info("<-------------------Over------------------->")
+    #  WriteOrder_To_Mssql -------->getorder.py-------->Create_table.py(基于Create_table的超类)-------->WriteSingleOrder.py
+
+

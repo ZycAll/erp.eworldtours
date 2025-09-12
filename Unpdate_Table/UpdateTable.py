@@ -27,18 +27,19 @@ try:
         'FRSK2406110001', 'FRSK2406100002', 'FRSK2406100001',
         'FRSK2406070001', 'FRSK2406060002'
     ]
-
+    add_col = "ALTER TABLE Eworldtours_AllOrders ADD ERP_Type VARCHAR(50);"
+    changeName = "EXEC sp_rename 'Eworldtours_AllOrders.ERP_Type', 'AccountName', 'COLUMN';"
     # 使用参数化查询批量更新[1,5](@ref)
-    update_query = "UPDATE Eworldtours_AllOrders SET OrderType = ? WHERE OrderId = ?"
+    #update_query = "UPDATE Eworldtours_AllOrders SET OrderType = ? WHERE OrderId = ?"
     # 准备数据：为每个ProductId创建一个元组(新值, ProductId)
-    update_data = [('SupplyOrder-Tinma', pid) for pid in product_ids]
-
+    #update_data = [('SupplyOrder-Tinma', pid) for pid in product_ids]
+    cursor.execute(changeName)
     # 使用executemany批量执行更新
-    cursor.executemany(update_query, update_data)
+    #cursor.executemany(update_query, update_data)
 
     connection.commit()
-    print(f"成功更新了 {len(product_ids)} 条记录的OrderType字段")
-
+    #print(f"成功更新了 {len(product_ids)} 条记录的OrderType字段")
+    print(f"成功更新了 ERP_Type 字段")
 except pyodbc.Error as e:
     print(f"数据库操作出错: {e}")
     connection.rollback()

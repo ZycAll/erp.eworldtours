@@ -1,18 +1,19 @@
+import os
+
 import pandas as pd
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from sqlalchemy.orm import sessionmaker
 
 # 假设这些导入是你项目中已有的
-from MSSQL.Create_table import MSSQLDatabaseWriter
-from Models.order_model import Order
+from Create_table import MSSQLDatabaseWriter
+from order_model import Order
 
 
 class ReadExcelSingleFile:
     def __init__(self):
         self.data = None
-        self.filename = "../excel_xlsx/DistributionOrder-Tinma.xlsx"  # 专注于单个文件
+        self.filename = "AllOrder-Tinma.xlsx"  # 专注于单个文件
         self.session = None
         self.lock = threading.Lock()  # 线程锁确保数据库操作安全
         self.failed_orders = []  # 用于记录最终仍失败的订单信息
@@ -58,7 +59,8 @@ class ReadExcelSingleFile:
 
             # 这里需要根据你的Excel列名和Order模型字段进行匹配
             order = Order(
-                OrderType="DistributionOrder-Tinma",
+                AccountName= "Tinma",
+                OrderType="AllOrder",
                 OrderId=order_data.get('订单编号'),
                 OrderName=order_data.get('订单名称'),
                 ProductId=order_data.get('商品编号'),
@@ -248,6 +250,16 @@ class ReadExcelSingleFile:
                 print(f"保存失败订单到文件时出错: {e}")
         else:
             print("\n所有订单均已成功插入！")
+    def run(self,writer):
+        max_workers = min(32, (os.cpu_count() or 1) * 3)
+        SessionMaker_2 = writer.Session
+
+        # 2. 初始化单文件读取器
+        data_reader = ReadExcelSingleFile()
+        data_reader.set_database_session(SessionMaker_2)
+
+        # 3. 使用多线程处理单个文件
+        data_reader.process_single_file_threaded(max_workers=12, chunksize=100)  # 可根据需要调整线程数和块大小
 
 
 if __name__ == '__main__':
@@ -258,11 +270,3 @@ if __name__ == '__main__':
         username="majestic",
         password="1AF@8A79f67^0110F7e532C*-21857F8"
     )
-    SessionMaker = writer.Session
-
-    # 2. 初始化单文件读取器
-    data_reader = ReadExcelSingleFile()
-    data_reader.set_database_session(SessionMaker)
-
-    # 3. 使用多线程处理单个文件
-    data_reader.process_single_file_threaded(max_workers=12, chunksize=100)  # 可根据需要调整线程数和块大小

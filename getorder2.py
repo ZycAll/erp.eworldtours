@@ -1,7 +1,7 @@
 import requests
 
 
-class GetOrder:
+class GetOrder2:
     def __init__(self):
         self.url1 = "https://erp.eworldtours.com/plugins/J2Travel.Order/getdata.aspx"
         self.url2 = "https://erp.eworldtours.com/TravelOptPage/system/CommOpt.aspx"
@@ -52,22 +52,23 @@ class GetOrder:
             "viewid": "undefined",
             "file": None,
             "opt": "SDownFile",
-            "randomid": "1493_1757473647921"
+            "randomid": "8399_1757659897659"
         }
         #------Tinma-----------
-        self.payload4 = "action=getorderlist&otype=&moduleId=b426120c-ab3c-47fb-bca9-53d4bd3954b3&print=export&type=all&iswc=&inpara=%5B%7B%27splm%27%3A%27all%27%2C%27tabsel%27%3A%27%27%2C%27cylx%27%3A%27%27%2C%27xlpp%27%3A%27%27%2C%27lm%27%3A%27%27%2C%27ywy%27%3A%27%27%2C%27xdbm%27%3A%27%27%2C%27xdr%27%3A%27%27%2C%27skbm%27%3A%27%27%2C%27gys%27%3A%27%27%2C%27xdsjs%27%3A%27%27%2C%27xdsje%27%3A%27%27%2C%27lczt%27%3A%27%27%2C%27ctrqs%27%3A%27%27%2C%27ctrqe%27%3A%27%27%2C%27xllx%27%3A%27%27%2C%27skqd%27%3A%27%27%2C%27ztwf%27%3A%27%27%2C%27strbqlx%27%3A%27%27%2C%27cyrq%27%3A%27%27%2C%27xcts%27%3A%27%27%2C%27xcte%27%3A%27%27%2C%27mdd%27%3A%27%27%2C%27cfd%27%3A%27%27%2C%27spm%27%3A%27%27%2C%27strbq%27%3A%27%27%2C%27order%27%3A%27null%20asc%27%2C%27ykmd%27%3A%27%27%2C%27wkdqtx%27%3A%27%27%7D%5D&timer=1757493926628"
+        self.payload4 = "action=getorderlist&otype=&moduleId=b426120c-ab3c-47fb-bca9-53d4bd3954b3&print=export&type=all&iswc=&inpara=%5B%7B%27splm%27%3A%27all%27%2C%27tabsel%27%3A%27%27%2C%27cylx%27%3A%27%27%2C%27xlpp%27%3A%27%27%2C%27lm%27%3A%27%27%2C%27ywy%27%3A%27%27%2C%27xdbm%27%3A%27%27%2C%27xdr%27%3A%27%27%2C%27skbm%27%3A%27%27%2C%27gys%27%3A%27%27%2C%27xdsjs%27%3A%27%27%2C%27xdsje%27%3A%27%27%2C%27lczt%27%3A%27%27%2C%27ctrqs%27%3A%27%27%2C%27ctrqe%27%3A%27%27%2C%27xllx%27%3A%27%27%2C%27skqd%27%3A%27%27%2C%27ztwf%27%3A%27%27%2C%27strbqlx%27%3A%27%27%2C%27cyrq%27%3A%27%27%2C%27xcts%27%3A%27%27%2C%27xcte%27%3A%27%27%2C%27mdd%27%3A%27%27%2C%27cfd%27%3A%27%27%2C%27spm%27%3A%27%27%2C%27strbq%27%3A%27%27%2C%27order%27%3A%27null%20asc%27%2C%27ykmd%27%3A%27%27%2C%27wkdqtx%27%3A%27%27%7D%5D&timer=1757660715566"
         self.payload5 = "action=getinnerorderlist&otype=pt&moduleId=ff64aabc-43fa-4b38-972d-839287065f73&print=export&type=gty&iswc=&inpara=%5B%7B%27splm%27%3A%27gty%27%2C%27tabsel%27%3A%27%27%2C%27cylx%27%3A%27%27%2C%27xlpp%27%3A%27%27%2C%27lm%27%3A%27%27%2C%27ywy%27%3A%27%27%2C%27xdbm%27%3A%27%27%2C%27xdr%27%3A%27%27%2C%27skbm%27%3A%27%27%2C%27gys%27%3A%27%27%2C%27xdsjs%27%3A%27%27%2C%27xdsje%27%3A%27%27%2C%27lczt%27%3A%27%27%2C%27ctrqs%27%3A%27%27%2C%27ctrqe%27%3A%27%27%2C%27xllx%27%3A%27%27%2C%27skqd%27%3A%27%27%2C%27ztwf%27%3A%27%27%2C%27strbqlx%27%3A%27%27%2C%27cyrq%27%3A%27%27%2C%27xcts%27%3A%27%27%2C%27xcte%27%3A%27%27%2C%27mdd%27%3A%27%27%2C%27cfd%27%3A%27%27%2C%27spm%27%3A%27%27%2C%27strbq%27%3A%27%27%2C%27order%27%3A%27null%20asc%27%2C%27ykmd%27%3A%27%27%2C%27wkdqtx%27%3A%27%27%7D%5D&timer=1757494449307"
         self.payload6 = "action=getinnerorderlist&otype=dx&moduleId=5856bed2-7d97-4a9f-932a-b6e77e08fe36&print=export&type=gty&iswc=&inpara=%5B%7B%27splm%27%3A%27gty%27%2C%27tabsel%27%3A%27%27%2C%27cylx%27%3A%27%27%2C%27xlpp%27%3A%27%27%2C%27lm%27%3A%27%27%2C%27ywy%27%3A%27%27%2C%27xdbm%27%3A%27%27%2C%27xdr%27%3A%27%27%2C%27skbm%27%3A%27%27%2C%27gys%27%3A%27%27%2C%27xdsjs%27%3A%27%27%2C%27xdsje%27%3A%27%27%2C%27lczt%27%3A%27%27%2C%27ctrqs%27%3A%27%27%2C%27ctrqe%27%3A%27%27%2C%27xllx%27%3A%27%27%2C%27skqd%27%3A%27%27%2C%27ztwf%27%3A%27%27%2C%27strbqlx%27%3A%27%27%2C%27cyrq%27%3A%27%27%2C%27xcts%27%3A%27%27%2C%27xcte%27%3A%27%27%2C%27mdd%27%3A%27%27%2C%27cfd%27%3A%27%27%2C%27spm%27%3A%27%27%2C%27strbq%27%3A%27%27%2C%27order%27%3A%27null%20asc%27%2C%27ykmd%27%3A%27%27%2C%27wkdqtx%27%3A%27%27%7D%5D&timer=1757494573772"
         self.data2 = {
             "viewid": "undefined",
             "file": None,
             "opt": "SDownFile",
-            "randomid": "9320_1757493960382"
+            "randomid": "1926_1757660748050"
         }
-    def get(self,filename,payload,headers):
+    def get(self,filename,payload,headers,data):
         response1 = requests.post(self.url1, headers=headers, params=payload)
-        self.data["file"]= response1.text
-        response2 = requests.post(self.url2, headers=headers, data=self.data)
+        self.data2["file"]= response1.text
+        print(response1.text)
+        response2 = requests.post(self.url2, headers=headers, data=data)
         with open(filename, 'wb') as f:
             f.write(response2.content)
         print(f"文件已保存为: {filename}")
